@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Punishment Task</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+        .montserrat-bold {
+            font-family: "Montserrat", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 800;
+            font-style: normal;
+        }
+
+        .montserrat {
+            font-family: "Montserrat", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        body {
+            font-family: "Montserrat", sans-serif;
+            margin: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        label,
+        input,
+        textarea,
+        button {
+            display: block;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        input,
+        textarea,
+        button {
+            padding: 10px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        button {
+            font-family: "Montserrat", sans-serif;
+            font-weight: 600;
+            background-color: #ff74b5;
+            color: white;
+            border-color: #f1a2c7;
+            border: 15%;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff95c5;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+
+            textarea {
+                height: 100px;
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Line Punishment Task</h1>
+    <form id="punishment-form">
+        <label for="sentence">Type a sentence you want to repeat as punishment:</label>
+        <input type="text" id="sentence" required>
+
+        <label for="repeatCount">How many times will you type the sentence?</label>
+        <input type="number" id="repeatCount" min="1" required>
+
+        <button type="button" onclick="startPunishment()">Start</button>
+    </form>
+
+    <div id="task" style="display: none;">
+        <p id="instruction"></p>
+        <textarea id="textInput" rows="4" cols="50" onpaste="return false;" oncontextmenu="return false;"></textarea>
+        <p>Correctly typed: <span id="correctCount">0</span></p>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <!--<img src="your-image-url.jpg" alt="Congratulations" style="max-width: 100%; height: auto;">-->
+
+            <h2>Task Completed!</h2>
+            <h4>aww good boy! ♡ you're making princess proud!</h4>
+            <p id="taskSentence"></p>
+            <p id="timeTaken"></p>
+        </div>
+    </div>
+
+    <script>
+        let sentenceToRepeat;
+        let repeatCount;
+        let correctCount = 0;
+        let startTime;
+
+        function startPunishment() {
+            sentenceToRepeat = document.getElementById('sentence').value;
+            repeatCount = parseInt(document.getElementById('repeatCount').value);
+            correctCount = 0;
+
+            document.getElementById('punishment-form').style.display = 'none';
+            document.getElementById('task').style.display = 'block';
+            document.getElementById('instruction').innerText = `Type the following sentence ${repeatCount} times: "${sentenceToRepeat}"`;
+            document.getElementById('textInput').addEventListener('input', checkSentence);
+
+            // Start time
+            startTime = new Date();
+        }
+
+        function checkSentence() {
+            const textInput = document.getElementById('textInput').value.trim();
+
+            if (textInput === sentenceToRepeat) {
+                correctCount++;
+                document.getElementById('correctCount').innerText = correctCount;
+                document.getElementById('textInput').value = '';
+
+                if (correctCount === repeatCount) {
+                    document.getElementById('instruction').innerText = 'Task completed! Well done!';
+                    document.getElementById('textInput').removeEventListener('input', checkSentence);
+                    document.getElementById('textInput').disabled = true;
+
+                    // End time and calculate duration
+                    const endTime = new Date();
+                    const timeTaken = Math.floor((endTime - startTime) / 1000); // time in seconds
+
+                    // Display modal with task sentence and time taken
+                    document.getElementById('taskSentence').innerText = `The sentence was: "${sentenceToRepeat}"`;
+                    document.getElementById('timeTaken').innerText = `You took ${timeTaken} seconds to complete the punishment.`;
+                    const modal = document.getElementById('myModal');
+                    modal.style.display = "block";
+
+                    // Close button
+                    const span = document.getElementsByClassName('close')[0];
+                    span.onclick = function () {
+                        modal.style.display = "none";
+                    }
+
+                    window.onclick = function (event) {
+                        if (event.target == modal) {
+                            modal.style.display = "none";
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <footer>
+        <p>&copy; envy co</p>
+    </footer>
+</body>
+
+</html>
